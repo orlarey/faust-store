@@ -1,0 +1,44 @@
+{
+ "format": "fauststore-index",
+ "version": 1,
+ "updated": "2026-11-06T21:56:50Z",
+ "modules": [
+  {
+   "path": "modules/Drone/Drone.dsp",
+   "name": "Drone",
+   "author": "GRAME",
+   "license": "MIT",
+   "summary": "Drone: three detuned sawtooths through a slow lowpass filter",
+   "description": "- Three sawtooths around Freq, Detune apart (in cents), through a lowpass filter\n- Cutoff: the frequency of the filter, Gain: the level",
+   "functions": [
+    "Oscillator"
+   ],
+   "inlets": [],
+   "outlets": [
+    "out"
+   ],
+   "code": "a4d0b2bec861d05e262678eadb11048dd3803ab3",
+   "sha": "08ea9864650bc23e1edef2064b1d936fb1248b69",
+   "updated": "2026-11-06T21:56:50Z"
+  }
+ ],
+ "scenes": [
+  {
+   "path": "scenes/Nappe/Nappe.jfaust",
+   "name": "Nappe",
+   "sha": "2c1ac8b60af6c39aa40d7d52f7ae4dd6332f5654"
+  },
+  {
+   "path": "scenes/synctest-2/synctest-2.jfaust",
+   "name": "synctest-2",
+   "sha": "c7320b839c7aa33329dae0e40f22dc9a41820552",
+   "codes": [
+    "5335ca88c2681dd2cc1ee57f1803c1f3e0338760",
+    "67a93afa4f049052341c01e0aaa8f737489823bb",
+    "a4d0b2bec861d05e262678eadb11048dd3803ab3",
+    "dc90e8538bdbdab09d31b8f0abe7f298f2f29819"
+   ],
+   "updated": "2026-11-06T21:56:50Z"
+  }
+ ]
+}

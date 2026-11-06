@@ -1,0 +1,356 @@
+{
+ "format": "faustplayground-patch",
+ "version": 3,
+ "sceneName": "synctest 2",
+ "modules": [
+  {
+   "id": "output",
+   "kind": "output",
+   "inputs": 2,
+   "outputs": 0,
+   "name": "output",
+   "code": "",
+   "x": 1270.3790625,
+   "y": 49.1015625,
+   "params": {},
+   "acc": []
+  },
+  {
+   "id": "input",
+   "kind": "input",
+   "inputs": 0,
+   "outputs": 2,
+   "name": "input",
+   "code": "",
+   "x": 0,
+   "y": 406.80395657348635,
+   "params": {},
+   "acc": []
+  },
+  {
+   "id": "29",
+   "kind": "faust",
+   "inputs": 0,
+   "outputs": 3,
+   "name": "SyncClock",
+   "code": "process = vgroup(\"SyncClock\",environment{\ndeclare name \"Sync Clock\";\ndeclare author \"GRAME\";\ndeclare function \"Clock Generator\";\ndeclare summary \"Sync Clock: gates on the timeline shared by the Faust applications of the browser (faust-sync), in time with them\";\ndeclare outlets \"clock; reset; run\";\ndeclare sync \"index; run; start; tempo; meter\";\nimport(\"stdfaust.lib\");\n\n/* =============== DESCRIPTION ================\n\n- Follows the timeline shared by the Faust applications open in the browser (faust-sync): two faustmodular, a faustcode, play in time, their gates at the same instant\n- The transport of the toolbar (play, stop, tempo) drives the timeline, in this application and in the others\n- clock: a gate per sixteenth note, eighth note, quarter note or bar (Division), aligned on the bar; Width: how long it stays high, as a fraction of its period (in ticks: 960 per quarter note)\n- reset: a short gate when the playing starts from the beginning; run: 1 while the timeline plays\n- Tempo: the tempo of the timeline\n\n*/\n\n// the last inputs, reserved (declare sync): fed by the application with the timeline, at every sample. index: the\n// tick in the bar, an integer (960 per quarter note), exact: the samples of the ticks are computed in integers by\n// the application, the same in every one.\nprocess(index, running, start, tempo, meter) = vgroup(\"SyncClock\", attach(clock, division), reset, running)\nwith {\n    division = nentry(\"[0]Division[style:menu{'sixteenth':0.25;'eighth':0.5;'quarter':1;'bar':0}]\", 0.25, 0, 1, 0.25);\n    width = hslider(\"[1]Width\", 0.5, 0.05, 0.95, 0.01);\n    PPQ = 960;\n    // a step in ticks (a bar: the meter), and the ticks it stays high\n    step = int(select2(division > 0, meter, division) * PPQ + 0.5);\n    high = max(1, int(width * step + 0.5));\n    // the tick in the step; high for its first ticks...\n    pos = int(index + 0.5) % max(1, step);\n    inside = running * (pos < high);\n    // ...from the tick that enters a new step (the tick in the step falls by more than half a step: 239 → 0), or the\n    // start of the playing: not when the playing is taken up again in the middle of a step; a small step back of\n    // the position gives no gate\n    begin = start | ((pos < high) * (pos < pos' - step / 2));\n    clock = (max(begin) : *(inside)) ~ _ : attach(_, tempo : hbargraph(\"[2]Tempo[unit:BPM]\", 0, 300));\n    // high for n samples (rounded) from a trigger\n    hold(trig, n) = (trig * rint(n)) : max ~ (-(1) : max(0)) : >(0);\n    reset = hold(start, 0.002 * ma.SR);\n};\n\n}.process);",
+   "x": 93.72032617187506,
+   "y": -52.33632224121094,
+   "params": {
+    "/SyncClock/SyncClock/Division": 0.25,
+    "/SyncClock/SyncClock/Width": 0.36
+   },
+   "acc": [
+    {
+     "address": "/SyncClock/SyncClock/Division",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/SyncClock/SyncClock/Width",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    }
+   ]
+  },
+  {
+   "id": "30",
+   "kind": "faust",
+   "inputs": 1,
+   "outputs": 1,
+   "name": "ADSR",
+   "code": "process = vgroup(\"ADSR\",environment{\ndeclare name \"ADSR\";\ndeclare author \"GRAME\";\nimport(\"stdfaust.lib\");\n\n/* =============== DESCRIPTION ================\n\n- Envelope generator, unipolar output in [0, 1]\n- Triggered by its input (a gate: on while above 0, e.g. from Clock) or by its Gate button\n- To shape a level: release the cable on a gain slider set to its minimum\n\n*/\n\nprocess = vgroup(\"ADSR\", _ > 0 : max(button(\"Gate\")) : en.adsr(a, d, s, r));\n\na = hslider(\"[1]Attack[unit:s]\", 0.01, 0.001, 2, 0.001);\nd = hslider(\"[2]Decay[unit:s]\", 0.2, 0.001, 2, 0.001);\ns = hslider(\"[3]Sustain\", 0.5, 0, 1, 0.01);\nr = hslider(\"[4]Release[unit:s]\", 0.3, 0.001, 5, 0.001);\n\n}.process);",
+   "x": 387.2565625,
+   "y": -52.343500000000006,
+   "params": {
+    "/ADSR/ADSR/Gate": 0,
+    "/ADSR/ADSR/Attack": 0.047,
+    "/ADSR/ADSR/Decay": 0.379,
+    "/ADSR/ADSR/Sustain": 0.9,
+    "/ADSR/ADSR/Release": 0.042
+   },
+   "acc": [
+    {
+     "address": "/ADSR/ADSR/Gate",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/ADSR/ADSR/Attack",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/ADSR/ADSR/Decay",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/ADSR/ADSR/Sustain",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/ADSR/ADSR/Release",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    }
+   ]
+  },
+  {
+   "id": "32",
+   "kind": "faust",
+   "inputs": 0,
+   "outputs": 1,
+   "name": "Drone",
+   "code": "process = vgroup(\"Drone\",environment{\ndeclare name \"Drone\";\ndeclare author \"GRAME\";\ndeclare license \"MIT\";\ndeclare function \"Oscillator\";\ndeclare summary \"Drone: three detuned sawtooths through a slow lowpass filter\";\ndeclare outlets \"out\";\nimport(\"stdfaust.lib\");\n\n/* =============== DESCRIPTION ================\n\n- Three sawtooths around Freq, Detune apart (in cents), through a lowpass filter\n- Cutoff: the frequency of the filter, Gain: the level\n\n*/\n\nprocess = (os.sawtooth(freq * d) + os.sawtooth(freq) + os.sawtooth(freq / d)) / 3 : fi.lowpass(2, cutoff) * gain\nwith {\n    freq = hslider(\"[0]Freq[unit:Hz][scale:log]\", 110, 20, 2000, 0.01);\n    detune = hslider(\"[1]Detune[unit:cents]\", 7, 0, 50, 0.1);\n    cutoff = hslider(\"[2]Cutoff[unit:Hz][scale:log]\", 800, 50, 10000, 1);\n    gain = hslider(\"[3]Gain\", 0.3, 0, 1, 0.01);\n    d = 2 ^ (detune / 1200);\n};\n\n}.process);",
+   "x": 910.47159375,
+   "y": -206.671625,
+   "params": {
+    "/Drone/Freq": 110,
+    "/Drone/Detune": 0,
+    "/Drone/Cutoff": 175,
+    "/Drone/Gain": 0.01,
+    "/Drone/depth_Cutoff": 0.666,
+    "/Drone/depth_Detune": 0.843,
+    "/Drone/depth_Gain": 0.974,
+    "/Drone/depth_Freq": 0.125
+   },
+   "acc": [
+    {
+     "address": "/Drone/Freq",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/Detune",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/Cutoff",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/Gain",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/depth_Cutoff",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/depth_Detune",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/Drone/depth_Gain",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    }
+   ],
+   "modulations": [
+    {
+     "widget": "/Drone/Gain",
+     "target": "Gain",
+     "mode": "modulate",
+     "min": 0,
+     "max": 1,
+     "exponential": false
+    },
+    {
+     "widget": "/Drone/Cutoff",
+     "target": "Cutoff",
+     "mode": "modulate",
+     "min": 50,
+     "max": 10000,
+     "exponential": true
+    },
+    {
+     "widget": "/Drone/Detune",
+     "target": "Detune",
+     "mode": "modulate",
+     "min": 0,
+     "max": 50,
+     "exponential": false
+    }
+   ]
+  },
+  {
+   "id": "33",
+   "kind": "faust",
+   "inputs": 0,
+   "outputs": 1,
+   "name": "LFO",
+   "code": "process = vgroup(\"LFO\",environment{\ndeclare name \"LFO\";\ndeclare author \"GRAME\";\ndeclare function \"LFO\";\ndeclare summary \"Low frequency oscillator, four shapes, bipolar or unipolar, with reset\";\ndeclare outlets \"LFO\";\nimport(\"stdfaust.lib\");\n\n/* =============== DESCRIPTION ================\n\n- Low frequency oscillator: sine, triangle, saw or square\n- Output in [-1, 1]; Unipolar: in [0, 1] (on a widget, its value is then the minimum of the modulation)\n- Reset: restarts the cycle; a clock dropped on it syncs the LFO\n\n*/\n\nprocess = vgroup(\"LFO\", lfo(button(\"[3]Reset\")));\n\nlfo(reset) = (sin(2 * ma.PI * ph), 1 - 4 * abs(ph - 0.5), 2 * ph - 1, select2(ph < 0.5, -1, 1))\n    : ba.selectn(4, shape) <: select2(unipolar, _, (_ + 1) / 2)\nwith {\n    ph = (*(1 - trigger) : +(rate / ma.SR) : ma.frac) ~ _;\n    trigger = gate(reset) <: _ > _';\n};\n\ngate(x) = loop ~ _ with { loop(p) = (x > 0.6) | ((x > 0.4) & p); };\n\nrate = hslider(\"[0]Rate[unit:Hz][scale:log]\", 1, 0.01, 50, 0.01);\nshape = hslider(\"[1]Shape[style:menu{'sine':0;'triangle':1;'saw':2;'square':3}]\", 0, 0, 3, 1);\nunipolar = checkbox(\"[2]Unipolar\");\n\n}.process);",
+   "x": 388.9610625,
+   "y": -382.17609375,
+   "params": {
+    "/LFO/LFO/Rate": 0.1,
+    "/LFO/LFO/Shape": 2,
+    "/LFO/LFO/Unipolar": 1,
+    "/LFO/LFO/Reset": 0
+   },
+   "acc": [
+    {
+     "address": "/LFO/LFO/Rate",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/LFO/LFO/Shape",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/LFO/LFO/Unipolar",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    },
+    {
+     "address": "/LFO/LFO/Reset",
+     "axis": 0,
+     "curve": 0,
+     "amin": -10,
+     "amid": 0,
+     "amax": 10,
+     "enabled": false
+    }
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "from": {
+    "module": "29",
+    "port": 0
+   },
+   "to": {
+    "module": "30",
+    "port": 0
+   }
+  },
+  {
+   "from": {
+    "module": "30",
+    "port": 0
+   },
+   "to": {
+    "module": "32",
+    "port": 0
+   }
+  },
+  {
+   "from": {
+    "module": "30",
+    "port": 0
+   },
+   "to": {
+    "module": "32",
+    "port": 1
+   }
+  },
+  {
+   "from": {
+    "module": "32",
+    "port": 0
+   },
+   "to": {
+    "module": "output",
+    "port": 0
+   }
+  },
+  {
+   "from": {
+    "module": "32",
+    "port": 0
+   },
+   "to": {
+    "module": "output",
+    "port": 1
+   }
+  },
+  {
+   "from": {
+    "module": "33",
+    "port": 0
+   },
+   "to": {
+    "module": "32",
+    "port": 2
+   }
+  }
+ ]
+}
