@@ -1,0 +1,9 @@
+{
+  "format": "fauststore",
+  "version": 1,
+  "name": "faust-store",
+  "description": "A store for faustmodular and other Faust related applications",
+  "author": "Yann Orlarey",
+  "license": "MIT",
+  "language": "en"
+}
