@@ -1,7 +1,7 @@
 {
  "format": "fauststore-index",
  "version": 1,
- "updated": "2026-11-06T21:56:50Z",
+ "updated": "2026-11-07T11:51:27Z",
  "modules": [
   {
    "path": "modules/Drone/Drone.dsp",
@@ -20,6 +20,18 @@
    "code": "a4d0b2bec861d05e262678eadb11048dd3803ab3",
    "sha": "08ea9864650bc23e1edef2064b1d936fb1248b69",
    "updated": "2026-11-06T21:56:50Z"
+  },
+  {
+   "path": "modules/horn_v4/horn_v4.dsp",
+   "name": "horn_v4",
+   "summary": "",
+   "description": "",
+   "functions": [],
+   "inlets": [],
+   "outlets": [],
+   "code": "e6701ca273b5a382eba2ca7e1527c81ef39a5399",
+   "sha": "ebe7f4c77a4fcf6d81db88c400e4fa0c0ba77206",
+   "updated": "2026-11-07T11:51:27Z"
   }
  ],
  "scenes": [
@@ -30,15 +42,15 @@
   },
   {
    "path": "scenes/synctest-2/synctest-2.jfaust",
-   "name": "synctest-2",
+   "name": "synctest 2",
    "sha": "c7320b839c7aa33329dae0e40f22dc9a41820552",
+   "updated": "2026-11-06T21:56:50Z",
    "codes": [
     "5335ca88c2681dd2cc1ee57f1803c1f3e0338760",
     "67a93afa4f049052341c01e0aaa8f737489823bb",
     "a4d0b2bec861d05e262678eadb11048dd3803ab3",
     "dc90e8538bdbdab09d31b8f0abe7f298f2f29819"
-   ],
-   "updated": "2026-11-06T21:56:50Z"
+   ]
   }
  ]
 }
