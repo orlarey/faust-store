@@ -1,7 +1,7 @@
 {
  "format": "fauststore-index",
  "version": 1,
- "updated": "2026-11-07T11:51:27Z",
+ "updated": "2026-11-07T11:55:24Z",
  "modules": [
   {
    "path": "modules/Drone/Drone.dsp",
@@ -32,6 +32,18 @@
    "code": "e6701ca273b5a382eba2ca7e1527c81ef39a5399",
    "sha": "ebe7f4c77a4fcf6d81db88c400e4fa0c0ba77206",
    "updated": "2026-11-07T11:51:27Z"
+  },
+  {
+   "path": "modules/horn_v40/horn_v40.dsp",
+   "name": "horn_v40",
+   "summary": "",
+   "description": "",
+   "functions": [],
+   "inlets": [],
+   "outlets": [],
+   "code": "ddbef36ab692d5ed98df57e87453ed307f6cf143",
+   "sha": "eebc53ff561a2a9d0b9e96e749881d4814f40556",
+   "updated": "2026-11-07T11:55:24Z"
   }
  ],
  "scenes": [
