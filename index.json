@@ -1,7 +1,7 @@
 {
  "format": "fauststore-index",
  "version": 1,
- "updated": "2026-11-07T11:55:24Z",
+ "updated": "2026-11-16T06:00:33Z",
  "modules": [
   {
    "path": "modules/Drone/Drone.dsp",
@@ -55,14 +55,17 @@
   {
    "path": "scenes/synctest-2/synctest-2.jfaust",
    "name": "synctest 2",
-   "sha": "c7320b839c7aa33329dae0e40f22dc9a41820552",
-   "updated": "2026-11-06T21:56:50Z",
+   "sha": "babf0b0fa2a02cc3b05d527513dff16c539e3b7f",
    "codes": [
     "5335ca88c2681dd2cc1ee57f1803c1f3e0338760",
     "67a93afa4f049052341c01e0aaa8f737489823bb",
     "a4d0b2bec861d05e262678eadb11048dd3803ab3",
-    "dc90e8538bdbdab09d31b8f0abe7f298f2f29819"
-   ]
+    "dc90e8538bdbdab09d31b8f0abe7f298f2f29819",
+    "908b9d625d91896a0158e7f1361cbbda3b026c3c",
+    "ddbef36ab692d5ed98df57e87453ed307f6cf143",
+    "3e40f0884b70b37bfd52791356f724279d0e9190"
+   ],
+   "updated": "2026-11-16T06:00:33Z"
   }
  ]
 }
